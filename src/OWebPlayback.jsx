@@ -32,7 +32,7 @@ function WebPlayback(props) {
 
         document.body.appendChild(script);
 
-        window.onSpotifyWebPlaybackSDKReady = () => {
+        window.onSpotifyWebPlaybackSDKReady = () => {//初始化Spotify Player
 
             const player = new window.Spotify.Player({
                 name: 'Web Playback SDK',
@@ -67,7 +67,7 @@ function WebPlayback(props) {
         };
     });
     }, []);
-    useEffect(() => {
+    useEffect(() => {//当data更新的时候，更新播放的tracks列表
         if (tracks != null){
         const newi = {
             "uris": tracks.map(track => "spotify:track:" + track.id),
@@ -76,7 +76,7 @@ function WebPlayback(props) {
         setNewTracks(newi);
         }
     }, [props.data]);
-    useEffect(() => {
+    useEffect(() => {//当播放的track列表更新的时候，把正在使用的device的播放列表更改为刚刚更新的列表
         if (deviceId) {
             fetch('https://api.spotify.com/v1/me/player/play?device_id=' + deviceId, {
                 method: "PUT",
