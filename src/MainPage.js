@@ -46,33 +46,29 @@ export default function MainPage(props) {
     event.preventDefault();
     const formData = new FormData(event.target);
     const searchTerm = formData.get('searchTerm');
-    const regex = /\(([^)]+)\)/g;
-    const modifiedSearchTerm = searchTerm.replace(regex, (match, p1) => {
+    const regex = /\(([^)]+)\)/g;//括號的正則表達
+    const modifiedSearchTerm = searchTerm.replace(regex, (match, p1) => {//把括號裏的文字都轉爲在後面加0.6
     const words = p1.split(' ');
     const modifiedWords = words.map(word => `${word}^0.6`);
     return `(${modifiedWords.join(' ')})`;
   });
-    solrClient.search(`q=${modifiedSearchTerm}`, (err, result) => {
+    solrClient.search(`q=${modifiedSearchTerm}`, (err, result) => {//從solr獲取前十個結果
       if (err) {
         console.log(err);
         return;
       }
-      const jsonData = result.response.docs.map(obj => obj._src_);
+      const jsonData = result.response.docs.map(obj => obj._src_);//把結果轉成jsonData格式便於閲讀
       const output = [];
       const idSet = {};
-      for (let i = 0; i < jsonData.length; i++) {
+      for (let i = 0; i < jsonData.length; i++) {//把重複的音樂刪掉
         const id = JSON.parse(jsonData[i]).add.doc.id;
         if (idSet[id]) {
           continue;
         }
         idSet[id] = true; // 将该id标记为已出现过
-        
-        // output.push({ id: id, lyrics: JSON.parse(jsonData[i]).add.doc.lyrics });
         output.push({ id: id});
       }
       console.log(output);
-      // output = result.response.docs
-      // console.log(jsonData);
       setData(output);
     });
   };
